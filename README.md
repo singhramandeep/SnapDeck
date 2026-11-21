@@ -6,7 +6,23 @@ Press a hotkey when a meeting starts, take screenshots with ShareX as usual, jot
 
 Built with [AutoHotkey v2](https://www.autohotkey.com). Windows only.
 
-<!-- TODO: add demo GIF: docs/demo.gif -->
+![A SnapDeck deck: title slide and three screenshot slides with notes as headings](docs/deck-overview.png)
+
+<p align="center"><em>A deck built from one session. Each note becomes the slide heading; captions show the time, source app and position.</em></p>
+
+## Screenshots
+
+| While recording | When you finish |
+|---|---|
+| **REC badge** (bottom-right, kept out of captures)<br><img src="docs/rec-badge.png" alt="REC badge showing start time, elapsed time and screenshot count" width="340"><br><br>**Live notes panel**<br><img src="docs/notes-panel.png" alt="Meeting notes panel with OK, Cancel and Skip notes this session" width="400"> | **Finish dialog**: name the meeting, pick formats, optionally draft an email<br><img src="docs/finish-dialog.png" alt="Finish dialog with meeting name, PowerPoint, PDF, Word, ZIP and Outlook options" width="420"> |
+
+<details>
+<summary>Individual slides</summary>
+
+![Title slide](docs/slide-title.png)
+![Screenshot slide with the note as its heading](docs/slide-with-note.png)
+
+</details>
 
 ## Features
 

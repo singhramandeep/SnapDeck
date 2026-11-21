@@ -1,4 +1,5 @@
-; ScreenshotSession.ahk  (AutoHotkey v2)
+; SnapDeck.ahk  (AutoHotkey v2)  -  https://github.com/singhramandeep/SnapDeck
+; MIT licence
 ; Collects ShareX screenshots taken during a session and turns them into
 ; PowerPoint / PDF / Word / ZIP.
 ;
@@ -16,8 +17,8 @@ Persistent
 ; ---------------- settings (.ini) ----------------
 INI := RegExReplace(A_ScriptFullPath, "\.ahk$", ".ini")
 DEFAULTS := Map(
-    "ShareXFolder",    "C:\Users\<yourpath>\Documents 1\ShareX\Screenshots",
-    "OutputFolder",    "C:\Users\<yourpath>\Documents 1\ScreenshotSessions",
+    "ShareXFolder",    A_MyDocuments "\ShareX\Screenshots",
+    "OutputFolder",    A_MyDocuments "\SnapDeck",
     "Mode",            "Move",      ; Move or Copy (Copy keeps originals in ShareX)
     "AutoStopMinutes", "60",        ; 0 = never auto-stop
     "AutoStopFormats", "pptx",      ; comma list of pptx,pdf,docx,zip used when auto-stopping
@@ -65,7 +66,7 @@ tray.Add("Settings", settingsMenu)
 tray.Add()
 tray.Add("Exit", (*) => ExitApp())
 SetIdleTray()
-TrayTip "Ctrl+Alt+S start · Ctrl+Alt+E stop", "Screenshot Session ready"
+TrayTip "Ctrl+Alt+S start · Ctrl+Alt+E stop", "SnapDeck ready"
 
 ^!s::StartSession()
 ^!e::StopDialog()
@@ -78,14 +79,14 @@ SetIdleTray() {
     A_TrayMenu.Enable(L_START), A_TrayMenu.Disable(L_STOP), A_TrayMenu.Disable(L_NOTE)
     A_TrayMenu.Default := L_START
     TraySetIcon "shell32.dll", 304
-    A_IconTip := "Screenshot Session: idle"
+    A_IconTip := "SnapDeck: idle"
 }
 
 ; ---------------- session ----------------
 StartSession() {
     global session, items, seen, startStamp, titleNote
     if session {
-        TrayTip "Already recording", "Screenshot Session"
+        TrayTip "Already recording", "SnapDeck"
         return
     }
     startStamp := A_Now
@@ -149,7 +150,7 @@ Poll() {
             items.Push(it)
             UpdateNotesLabel()
         } catch {
-            TrayTip "Could not capture " A_LoopFileName, "Screenshot Session"
+            TrayTip "Could not capture " A_LoopFileName, "SnapDeck"
         }
     }
 }
@@ -426,7 +427,7 @@ Finish(name, fmts, email := false) {
             errors .= "ZIP: " e.Message "`n"
     }
     if errors
-        MsgBox "Some outputs failed:`n" errors "`nScreenshots are in:`n" folder, "Screenshot Session"
+        MsgBox "Some outputs failed:`n" errors "`nScreenshots are in:`n" folder, "SnapDeck"
     if email && outputs.Length {
         try CreateEmail(title, started, outputs)
         catch as e
@@ -462,7 +463,7 @@ BrandLayout(lay, titleLay, W, H, footerH) {
         }
     }
     line := lay.Shapes.AddShape(1, 0, H - footerH, W, 1.5)
-    line.Fill.ForeColor.RGB := 0x005CFF          ; company orange #FF5C00 (BGR)
+    line.Fill.ForeColor.RGB := 0x005CFF          ; accent orange #FF5C00 (BGR)
     line.Line.Visible := 0
     if !logo
         return
@@ -550,7 +551,7 @@ BuildPptx(folder, base, imgs, title, started, tnote, wantPptx, wantPdf) {
             if it.note
                 SetNotes(s, it.note)
         }
-        ; template closing slide (e.g. Company "Closing 1")
+        ; template closing slide (e.g. a "Closing" layout)
         if branded && (closeLay := FindLayout(pres, "Closing", 0)) {
             s := pres.Slides.AddSlide(pres.Slides.Count + 1, closeLay)
             shapes := []
@@ -607,7 +608,7 @@ BuildDocx(folder, base, imgs, title, started, tnote) {
     word := ComObject("Word.Application")
     try {
         doc := word.Documents.Add()
-        doc.Content.Delete()                                  ; your Normal template has sample text in it
+        doc.Content.Delete()                                  ; start empty even if Normal.dotm has content
         ps := doc.PageSetup
         usableW := ps.PageWidth - ps.LeftMargin - ps.RightMargin
         AddPara(doc, title, 24, true)
